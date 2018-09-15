@@ -7,12 +7,21 @@ namespace DegreeSequenceChecker
     {
         static void Main(string[] args)
         {
-            IO.PrintIntro(); 
+            Console.WriteLine("Degree Sequence Checker");
+            IO.PrintIntro();
 
-            DegreeSequence myDegreeSequence = new DegreeSequence(IO.GetInput());
-            myDegreeSequence.Check();
+            string input = IO.GetInput();
 
-            IO.GetKey();
+            while (input != "q")
+            {
+                DegreeSequence myDegreeSequence = new DegreeSequence(input);
+                myDegreeSequence.Draw();
+
+                Console.WriteLine();
+                IO.PrintIntro();
+
+                input = IO.GetInput();
+            }
         }
     }
 }

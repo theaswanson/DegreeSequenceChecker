@@ -16,10 +16,10 @@ namespace DegreeSequenceChecker
         public DegreeSequence(string input)
         {
             degreeSequence = GetSequenceFromString(input);
-            SortSequence();
+            SortSequence(degreeSequence);
         }
 
-        public void Check()
+        public bool Check()
         {
             bool isGraphical = true;
 
@@ -48,7 +48,58 @@ namespace DegreeSequenceChecker
             }
 
             if (isGraphical)
+            {
                 Console.WriteLine("This sequence is graphical.");
+                return true;
+            }
+            else
+                return false;
+                
+        }
+
+        public void Draw()
+        {
+            if (!Check())
+                return;
+
+            List<int> sequence = new List<int>(degreeSequence);
+
+            int[,] adjacencyMatrix = new int[sequence.Count, sequence.Count];
+
+            for (int i = 0; i < sequence.Count; i++)
+            {
+                int degreeToSubtract = sequence[i];
+
+                sequence[i] = 0;
+
+                for (int j = i; degreeToSubtract > 0 && j < sequence.Count; j++)
+                {
+                    if (i == j)
+                        adjacencyMatrix[i, i] = 0;
+                    else if (sequence[j] > 0)
+                    {
+                        sequence[j]--;
+                        adjacencyMatrix[i, j] = 1;
+                        adjacencyMatrix[j, i] = 1;
+                        degreeToSubtract--;
+                    }
+                    else
+                    {
+                        adjacencyMatrix[i, j] = 0;
+                    }
+                }
+            }
+
+            Console.WriteLine("Adjacency Matrix:\n");
+            for (int i = 0; i < sequence.Count; i++)
+            {
+                for (int j = 0; j < sequence.Count; j++)
+                {
+                    Console.Write(adjacencyMatrix[i, j] + " ");
+                }
+
+                Console.WriteLine();
+            }
         }
 
         private List<int> GetSequenceFromString(string input)
@@ -68,30 +119,34 @@ namespace DegreeSequenceChecker
             return degreeSequence;
         }
 
-        private void SortSequence()
+        private void SortSequence(List<int> sequence)
         {
-            degreeSequence.Sort();
-            degreeSequence.Reverse();
+            sequence.Sort();
+            sequence.Reverse();
         }
                 
-        private void ReduceSequence()
+        private List<int> ReduceSequence(List<int> degreeSequence)
         {
-            for (int i = 0; i < degreeSequence.Count - 1; i++)
-            {
-                int degreeToSubtract = degreeSequence[0];
+            List<int> reducedSequence = new List<int>(degreeSequence);
 
-                degreeSequence[0] = 0;
+            for (int i = 0; i < reducedSequence.Count; i++)
+            {
+                int degreeToSubtract = reducedSequence[0];
+
+                reducedSequence[0] = 0;
 
                 int index = 1;
-                while (degreeToSubtract > 0)
+                while (degreeToSubtract > 0 && index < reducedSequence.Count)
                 {
-                    degreeSequence[index]--;
+                    reducedSequence[index]--;
                     degreeToSubtract--;
                     index++;
                 }
 
-                SortSequence();
+                SortSequence(reducedSequence);
             }
+
+            return reducedSequence;
         }
 
         private bool containsNegativeDegrees()
@@ -130,13 +185,12 @@ namespace DegreeSequenceChecker
 
         private bool passesAlgorithm()
         {
-            ReduceSequence();
+            List<int> reducedSequence = ReduceSequence(degreeSequence);
 
-            foreach (int degree in degreeSequence)
+            foreach (int degree in reducedSequence)
             {
                 if (degree != 0)
                     return false;
-                    
             }
 
             return true;

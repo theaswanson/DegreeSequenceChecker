@@ -8,8 +8,7 @@ namespace DegreeSequenceChecker
     {
         public static void PrintIntro()
         {
-            Console.WriteLine("Degree Sequence Checker");
-            Console.WriteLine("Enter a degree sequence of non-negative integers separated by spaces:");
+            Console.WriteLine("Enter a degree sequence of non-negative integers separated by spaces ('q' to quit):");
         }
 
         public static string GetInput()
