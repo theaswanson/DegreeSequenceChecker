@@ -72,6 +72,29 @@ namespace DegreeSequenceChecker
 
                 sequence[i] = 0;
 
+                List<int> indexesUsed = new List<int>();
+                while (degreeToSubtract > 0)
+                {
+                    int maxDegree = Int32.MinValue;
+                    int maxDegreeIndex = 0;
+
+                    for (int j = 0; j < sequence.Count; j++)
+                    {
+                        if (sequence[j] > maxDegree && !indexesUsed.Contains(j))
+                        {
+                            maxDegree = sequence[j];
+                            maxDegreeIndex = j;
+                        }
+                    }
+
+                    indexesUsed.Add(maxDegreeIndex);
+                    sequence[maxDegreeIndex]--;
+                    adjacencyMatrix[i, maxDegreeIndex] = 1;
+                    adjacencyMatrix[maxDegreeIndex, i] = 1;
+                    degreeToSubtract--;
+                }
+
+                /*
                 for (int j = i; degreeToSubtract > 0 && j < sequence.Count; j++)
                 {
                     if (i == j)
@@ -88,6 +111,7 @@ namespace DegreeSequenceChecker
                         adjacencyMatrix[i, j] = 0;
                     }
                 }
+                */
             }
 
             Console.WriteLine("Adjacency Matrix:\n");
