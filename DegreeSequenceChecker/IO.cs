@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DegreeSequenceChecker
 {
-    public abstract class IO
+    public static class IO
     {
         public static void PrintIntro()
         {
