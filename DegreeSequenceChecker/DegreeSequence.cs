@@ -1,129 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace DegreeSequenceChecker
 {
     public class DegreeSequence
     {
-        List<int> degreeSequence;
-
-        public DegreeSequence()
-        {
-            degreeSequence = new List<int>();
-        }
+        public readonly List<int> Sequence;
+        public readonly List<string> Errors;
+        public readonly AdjacencyMatrix AdjacencyMatrix;
+        public bool IsGraphical => !Errors.Any();
 
         public DegreeSequence(string input)
         {
-            degreeSequence = Parse(input);
-            SortSequence(degreeSequence);
-        }
-
-        public bool Check()
-        {
-            var isGraphical = true;
-
-            if (containsNegativeDegrees())
+            Sequence = Parse(input);
+            SortSequence(Sequence);
+            Errors = GetErrors(Sequence);
+            if (!Errors.Any())
             {
-                Console.WriteLine("This sequence is not graphical because contains negative degrees.");
-                isGraphical = false;
-            }
-
-            if (!degreeSumIsEven())
-            {
-                Console.WriteLine("This sequence is not graphical because the sum of the degrees is not even.");
-                isGraphical = false;
-            }
-
-            if (!greatestDegreeIsGood())
-            {
-                Console.WriteLine("This sequence is not graphical because the greatest degree is too large.");
-                isGraphical = false;
-            }
-
-            if (!passesAlgorithm())
-            {
-                Console.WriteLine("This sequence is not graphical because it does not pass the Degree Sequence Algorithm.");
-                isGraphical = false;
-            }
-
-            if (isGraphical)
-            {
-                Console.WriteLine("This sequence is graphical.");
-                return true;
+                AdjacencyMatrix = new AdjacencyMatrix(Sequence);
             }
             else
-                return false;
-                
+            {
+                AdjacencyMatrix = null;
+            }
         }
 
-        public void Draw()
+        private List<string> GetErrors(List<int> degreeSequence)
         {
-            if (!Check())
-                return;
+            var errors = new List<string>();
 
-            var sequence = new List<int>(degreeSequence);
+            if (ContainsNegativeDegrees(degreeSequence))
+                errors.Add("Contains negative degrees.");
 
-            var adjacencyMatrix = new int[sequence.Count, sequence.Count];
+            if (!DegreeSumIsEven(degreeSequence))
+                errors.Add("The sum of the degrees is not even.");
 
-            for (var i = 0; i < sequence.Count; i++)
-            {
-                var degreeToSubtract = sequence[i];
+            if (!GreatestDegreeIsGood(degreeSequence))
+                errors.Add("The greatest degree is too large.");
 
-                sequence[i] = 0;
+            if (!PassesAlgorithm(degreeSequence))
+                errors.Add("Does not pass the Degree Sequence Algorithm.");
 
-                var indexesUsed = new List<int>();
-                while (degreeToSubtract > 0)
-                {
-                    var maxDegree = Int32.MinValue;
-                    var maxDegreeIndex = 0;
-
-                    for (var j = 0; j < sequence.Count; j++)
-                    {
-                        if (sequence[j] > maxDegree && !indexesUsed.Contains(j))
-                        {
-                            maxDegree = sequence[j];
-                            maxDegreeIndex = j;
-                        }
-                    }
-
-                    indexesUsed.Add(maxDegreeIndex);
-                    sequence[maxDegreeIndex]--;
-                    adjacencyMatrix[i, maxDegreeIndex] = 1;
-                    adjacencyMatrix[maxDegreeIndex, i] = 1;
-                    degreeToSubtract--;
-                }
-
-                /*
-                for (var j = i; degreeToSubtract > 0 && j < sequence.Count; j++)
-                {
-                    if (i == j)
-                        adjacencyMatrix[i, i] = 0;
-                    else if (sequence[j] > 0)
-                    {
-                        sequence[j]--;
-                        adjacencyMatrix[i, j] = 1;
-                        adjacencyMatrix[j, i] = 1;
-                        degreeToSubtract--;
-                    }
-                    else
-                    {
-                        adjacencyMatrix[i, j] = 0;
-                    }
-                }
-                */
-            }
-
-            Console.WriteLine("Adjacency Matrix:\n");
-            for (var i = 0; i < sequence.Count; i++)
-            {
-                for (var j = 0; j < sequence.Count; j++)
-                {
-                    Console.Write(adjacencyMatrix[i, j] + " ");
-                }
-
-                Console.WriteLine();
-            }
+            return errors;
         }
 
         private List<int> Parse(string input)
@@ -147,7 +67,7 @@ namespace DegreeSequenceChecker
             sequence.Sort();
             sequence.Reverse();
         }
-                
+
         private List<int> ReduceSequence(List<int> degreeSequence)
         {
             var reducedSequence = new List<int>(degreeSequence);
@@ -172,51 +92,25 @@ namespace DegreeSequenceChecker
             return reducedSequence;
         }
 
-        private bool containsNegativeDegrees()
+        private bool ContainsNegativeDegrees(List<int> degreeSequence)
         {
-            foreach (var degree in degreeSequence)
-            {
-                if (degree < 0)
-                    return true;
-            }
-            
-            return false;
+            return degreeSequence.Any(x => x < 0);
         }
 
-        private bool degreeSumIsEven()
+        private bool DegreeSumIsEven(List<int> degreeSequence)
         {
-            var degreeSum = 0;
-
-            foreach (var degree in degreeSequence)
-                degreeSum += degree;
-
-            if (degreeSum % 2 == 0)
-                return true;
-            else
-                return false;
-                
+            return degreeSequence.Sum() % 2 == 0;
         }
 
-        private bool greatestDegreeIsGood()
+        private bool GreatestDegreeIsGood(List<int> degreeSequence)
         {
-            if (degreeSequence[0] <= degreeSequence.Count - 1)
-                return true;
-            else
-                return false;
-                
+            return !(degreeSequence[0] > degreeSequence.Count);
         }
 
-        private bool passesAlgorithm()
+        private bool PassesAlgorithm(List<int> degreeSequence)
         {
             var reducedSequence = ReduceSequence(degreeSequence);
-
-            foreach (var degree in reducedSequence)
-            {
-                if (degree != 0)
-                    return false;
-            }
-
-            return true;
+            return !reducedSequence.Any(x => x != 0);
         }
     }
 }
