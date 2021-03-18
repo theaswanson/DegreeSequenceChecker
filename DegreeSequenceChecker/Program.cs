@@ -10,12 +10,12 @@ namespace DegreeSequenceChecker
             Console.WriteLine("Degree Sequence Checker");
             IO.PrintIntro();
 
-            string input = IO.GetInput();
+            var input = IO.GetInput();
 
             while (input != "q")
             {
-                DegreeSequence myDegreeSequence = new DegreeSequence(input);
-                myDegreeSequence.Draw();
+                var degreeSequence = new DegreeSequence(input);
+                degreeSequence.Draw();
 
                 Console.WriteLine();
                 IO.PrintIntro();

@@ -15,13 +15,13 @@ namespace DegreeSequenceChecker
 
         public DegreeSequence(string input)
         {
-            degreeSequence = GetSequenceFromString(input);
+            degreeSequence = Parse(input);
             SortSequence(degreeSequence);
         }
 
         public bool Check()
         {
-            bool isGraphical = true;
+            var isGraphical = true;
 
             if (containsNegativeDegrees())
             {
@@ -62,23 +62,23 @@ namespace DegreeSequenceChecker
             if (!Check())
                 return;
 
-            List<int> sequence = new List<int>(degreeSequence);
+            var sequence = new List<int>(degreeSequence);
 
-            int[,] adjacencyMatrix = new int[sequence.Count, sequence.Count];
+            var adjacencyMatrix = new int[sequence.Count, sequence.Count];
 
-            for (int i = 0; i < sequence.Count; i++)
+            for (var i = 0; i < sequence.Count; i++)
             {
-                int degreeToSubtract = sequence[i];
+                var degreeToSubtract = sequence[i];
 
                 sequence[i] = 0;
 
-                List<int> indexesUsed = new List<int>();
+                var indexesUsed = new List<int>();
                 while (degreeToSubtract > 0)
                 {
-                    int maxDegree = Int32.MinValue;
-                    int maxDegreeIndex = 0;
+                    var maxDegree = Int32.MinValue;
+                    var maxDegreeIndex = 0;
 
-                    for (int j = 0; j < sequence.Count; j++)
+                    for (var j = 0; j < sequence.Count; j++)
                     {
                         if (sequence[j] > maxDegree && !indexesUsed.Contains(j))
                         {
@@ -95,7 +95,7 @@ namespace DegreeSequenceChecker
                 }
 
                 /*
-                for (int j = i; degreeToSubtract > 0 && j < sequence.Count; j++)
+                for (var j = i; degreeToSubtract > 0 && j < sequence.Count; j++)
                 {
                     if (i == j)
                         adjacencyMatrix[i, i] = 0;
@@ -115,9 +115,9 @@ namespace DegreeSequenceChecker
             }
 
             Console.WriteLine("Adjacency Matrix:\n");
-            for (int i = 0; i < sequence.Count; i++)
+            for (var i = 0; i < sequence.Count; i++)
             {
-                for (int j = 0; j < sequence.Count; j++)
+                for (var j = 0; j < sequence.Count; j++)
                 {
                     Console.Write(adjacencyMatrix[i, j] + " ");
                 }
@@ -126,15 +126,14 @@ namespace DegreeSequenceChecker
             }
         }
 
-        private List<int> GetSequenceFromString(string input)
+        private List<int> Parse(string input)
         {
-            string[] degrees = input.Split(' ');
+            var degrees = input.Split(' ');
+            var degreeSequence = new List<int>();
 
-            List<int> degreeSequence = new List<int>();
-
-            foreach (string number in degrees)
+            foreach (var number in degrees)
             {
-                int convertedNum = 0;
+                var convertedNum = 0;
 
                 if (Int32.TryParse(number, out convertedNum))
                     degreeSequence.Add(convertedNum);
@@ -151,15 +150,15 @@ namespace DegreeSequenceChecker
                 
         private List<int> ReduceSequence(List<int> degreeSequence)
         {
-            List<int> reducedSequence = new List<int>(degreeSequence);
+            var reducedSequence = new List<int>(degreeSequence);
 
-            for (int i = 0; i < reducedSequence.Count; i++)
+            for (var i = 0; i < reducedSequence.Count; i++)
             {
-                int degreeToSubtract = reducedSequence[0];
+                var degreeToSubtract = reducedSequence[0];
 
                 reducedSequence[0] = 0;
 
-                int index = 1;
+                var index = 1;
                 while (degreeToSubtract > 0 && index < reducedSequence.Count)
                 {
                     reducedSequence[index]--;
@@ -175,7 +174,7 @@ namespace DegreeSequenceChecker
 
         private bool containsNegativeDegrees()
         {
-            foreach (int degree in degreeSequence)
+            foreach (var degree in degreeSequence)
             {
                 if (degree < 0)
                     return true;
@@ -186,9 +185,9 @@ namespace DegreeSequenceChecker
 
         private bool degreeSumIsEven()
         {
-            int degreeSum = 0;
+            var degreeSum = 0;
 
-            foreach (int degree in degreeSequence)
+            foreach (var degree in degreeSequence)
                 degreeSum += degree;
 
             if (degreeSum % 2 == 0)
@@ -209,9 +208,9 @@ namespace DegreeSequenceChecker
 
         private bool passesAlgorithm()
         {
-            List<int> reducedSequence = ReduceSequence(degreeSequence);
+            var reducedSequence = ReduceSequence(degreeSequence);
 
-            foreach (int degree in reducedSequence)
+            foreach (var degree in reducedSequence)
             {
                 if (degree != 0)
                     return false;
